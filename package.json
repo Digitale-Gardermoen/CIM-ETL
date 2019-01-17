@@ -1,0 +1,15 @@
+{
+  "name": "ad-export-sync",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kim Nerli",
+  "license": "MIT",
+  "dependencies": {
+    "activedirectory": "^0.7.2",
+    "dotenv": "^6.2.0"
+  }
+}
