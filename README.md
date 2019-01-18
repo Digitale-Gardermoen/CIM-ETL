@@ -1,4 +1,4 @@
-# AD-Export-Sync
+# CIM-ETL
 This is an export tool meant to extract data from AD, transform the data based on what an API wants and then store it in a mongodb.
 With this data, a HTTPS client will send that data to an API.
 
