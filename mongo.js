@@ -12,7 +12,7 @@ const userSchema = new Schema({
   email_secondary: String,
   org_import_id: String,
   location_import_id: String,
-  timezonee: String,
+  timezone: String,
   employee_id: String,
   job_title: String,
   roles: String,
@@ -23,7 +23,7 @@ const userSchema = new Schema({
 
 class db {
   constructor() {
-    this.conn = mongoose.createConnection("mongodb://127.0.0.1:27017/myapp", {
+    this.conn = mongoose.createConnection(process.env.MONGO, {
       useNewUrlParser: true,
       bufferCommands: false
     });
@@ -31,8 +31,15 @@ class db {
   }
 
   async findUser(username) {
-    console.log('checking db for user: ', username);
     return this.User.find({ username: username }).exec();
+  }
+
+  async upsertUser(SID, userObj) {
+    return this.User.updateOne(
+      { user_import_id: SID },
+      { $set: userObj },
+      { upsert: true }
+    );
   }
 }
 
