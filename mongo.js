@@ -23,23 +23,32 @@ const userSchema = new Schema({
 
 class db {
   constructor() {
+    // establish connection, there is no particular reason for using createConnection in place of connect. This just worked. I belive both of them work...
     this.conn = mongoose.createConnection(process.env.MONGO, {
-      useNewUrlParser: true,
-      bufferCommands: false
+      useNewUrlParser: true
     });
+    // create the User model so we can run queries against the users collection.
     this.User = this.conn.model("user", userSchema);
   }
 
+  // get user by username, returns a callback function
   async findUser(username) {
     return this.User.find({ username: username }).exec();
   }
 
+  // function to update a user, if it doesn't exist insert the user.
+  // this function only updates ONE document!
   async upsertUser(SID, userObj) {
     return this.User.updateOne(
       { user_import_id: SID },
       { $set: userObj },
       { upsert: true }
     );
+  }
+
+  // fetch all documents in the users collection, returns an array.
+  async fetchUsers() {
+    return this.User.find().exec();
   }
 }
 
