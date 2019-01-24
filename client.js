@@ -1,6 +1,6 @@
-require("dotenv").config();
-const https = require("https");
-const db = require("./mongo.js");
+require('dotenv').config();
+const https = require('https');
+const db = require('./mongo.js');
 const mongodb = new db();
 
 // create the function as a promise even if it returns a promise already.
@@ -21,31 +21,31 @@ fetch
     mongodb.conn.close();
 
     const options = {
-      hostname: "localhost",
+      hostname: 'localhost',
       port: 8000,
-      path: "/post",
-      method: "POST",
+      path: '/post',
+      method: 'POST',
       agent: false,
       rejectUnauthorized: false,
       headers: {
-        "Content-Length": Buffer.byteLength(JSON.stringify(users)),
-        "Content-Type": "application/x-www-form-urlencoded"
+        'Content-Length': Buffer.byteLength(JSON.stringify(users)),
+        'Content-Type': 'application/x-www-form-urlencoded'
       }
     };
 
     const req = https.request(options, res => {
-      console.log("statuscode: ", res.statusCode);
-      console.log("headers: ", res.headers);
-      res.setEncoding("utf8");
-      res.on("data", chunk => {
+      console.log('statuscode: ', res.statusCode);
+      console.log('headers: ', res.headers);
+      res.setEncoding('utf8');
+      res.on('data', chunk => {
         console.log(`BODY: ${chunk}`);
       });
-      res.on("end", () => {
-        console.log("No more data in response.");
+      res.on('end', () => {
+        console.log('No more data in response.');
       });
     });
 
-    req.on("error", e => {
+    req.on('error', e => {
       console.error(e);
     });
 
