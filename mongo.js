@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -28,7 +28,7 @@ class db {
       useNewUrlParser: true
     });
     // create the User model so we can run queries against the users collection.
-    this.User = this.conn.model("user", userSchema);
+    this.User = this.conn.model('user', userSchema);
   }
 
   // get user by username, returns a callback function
