@@ -1,37 +1,41 @@
-require("dotenv").config();
-const ActiveDirectory = require("activedirectory2");
-const db = require("./mongo.js");
+require('dotenv').config();
+const ActiveDirectory = require('activedirectory2');
+const db = require('./mongo.js');
 const mongodb = new db();
 
 // use a dictionary to translate the received object properties into the correct property names
 let translateDict = {
-  sn: "lastname",
-  givenName: "firstname",
-  sAMAccountName: "username",
-  mobile: "job_mobile",
-  telephoneNumber: "job_phone",
-  mail: "email",
-  objectSid: "user_import_id" // using objectSid as a import ID, seems like objectGUID sent something different than what you see in AD.
+  sn: 'lastname',
+  givenName: 'firstname',
+  sAMAccountName: 'username',
+  mobile: 'job_mobile',
+  telephoneNumber: 'job_phone',
+  mail: 'email',
+  objectSid: 'user_import_id', // using objectSid as a import ID, seems like objectGUID sent something different than what you see in AD.
+  employeeID: 'employee_id',
+  company: 'org_import_id',
+  title: 'job_title',
+  description: 'description'
 };
 
 let userTemplate = {
-  lastname: "",
-  firstname: "",
-  username: "",
-  user_import_id: "",
-  job_mobile: "",
-  job_phone: "",
-  email: "",
-  email_secondary: "",
-  org_import_id: "",
-  location_import_id: "",
-  timezonee: "",
-  employee_id: "",
-  job_title: "",
-  roles: "",
-  person_type: "",
-  dist_list: "",
-  description: ""
+  lastname: '',
+  firstname: '',
+  username: '',
+  user_import_id: '',
+  job_mobile: '',
+  job_phone: '',
+  email: '',
+  email_secondary: '',
+  org_import_id: '',
+  location_import_id: '',
+  timezonee: '',
+  employee_id: '',
+  job_title: '',
+  roles: '',
+  person_type: '',
+  dist_list: '',
+  description: ''
 };
 
 // function to clone the userTemplate object
@@ -69,29 +73,33 @@ const config = {
   password: process.env.LDAPPW,
   attributes: {
     user: [
-      "sn",
-      "givenName",
-      "sAMAccountName",
-      "mobile",
-      "telephoneNumber",
-      "mail",
-      "objectSid"
+      'sn',
+      'givenName',
+      'sAMAccountName',
+      'mobile',
+      'telephoneNumber',
+      'mail',
+      'objectSid',
+      'employeeID',
+      'company',
+      'title',
+      'description'
     ]
   }
 };
 const ad = new ActiveDirectory(config);
 let opts = {
-  filter: "objectClass=user",
+  filter: 'objectClass=user',
   baseDN: process.env.OPTSBASEDN
 };
 
-ad.findUsers(opts, false, function(err, users) {
+ad.findUsers(opts, false, function (err, users) {
   if (err) {
-    console.log("ERROR: ", err);
+    console.log('ERROR: ', err);
     return;
   }
   if (!users || users.length == 0) {
-    console.log("No users found.");
+    console.log('No users found.');
     return;
   }
   // create an array to hold callback data.
@@ -103,7 +111,7 @@ ad.findUsers(opts, false, function(err, users) {
     arr.push(importUser(userData));
   });
   Promise.all(arr)
-    .then(function() {
+    .then(function () {
       // close the db connection after all users have been updated/imported.
       mongodb.conn.close();
     })
