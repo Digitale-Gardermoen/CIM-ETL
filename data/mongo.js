@@ -23,28 +23,26 @@ const userSchema = new Schema({
 
 class db {
   constructor() {
-    // establish connection, there is no particular reason for using createConnection in place of connect. This just worked.
     this.conn = mongoose
       .connect(
         process.env.MONGO,
         { useNewUrlParser: true },
         function (err) {
-          if (err ) console.error('Failed to connect to mongo', err);
+          if (err) console.error('Failed to connect to mongo', err);    // this might be changed to do some better errorhandling later...
         });
-    // create the User model so we can run queries against the users collection.
-    userSchema.post('updateOne', function() {
+    userSchema.post('updateOne', function () {
       console.log('got updateOne')
     });
-    this.User = mongoose.model('user', userSchema);
+    this.User = mongoose.model('user', userSchema);   // create the User model so we can run queries against the users collection.
   }
 
-  // get user by username, returns a callback function
+  
   async findUser(username) {
-    return this.User.find({ username: username }).exec();
+    return this.User.find({ username: username }).exec();   // get user by username, returns a callback function
   }
 
   // function to update a user, if it doesn't exist insert the user.
-  // this function only updates ONE document!
+  // NOTE: this updates even if the user document has that same data. this is to be changed in the ETL layer.
   async upsertUser(SID, userObj) {
     return this.User.updateOne(
       { user_import_id: SID },
@@ -60,7 +58,7 @@ class db {
     return Query.exec();
   }
 
-  disconnectdb () {
+  disconnectdb() {
     mongoose.disconnect();
     return;
   }

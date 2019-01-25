@@ -18,6 +18,8 @@ let fetch = new Promise((reject, resolve) => {
 
 
 // create the client here, currently i just want to use POST.
+// most of this is from the getting started guide.
+/* TO BE CHANGED */
 fetch
   .then(function (users) {
     mongodb.disconnectdb(); // dc from mongo
