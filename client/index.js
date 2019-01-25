@@ -1,6 +1,6 @@
 require('dotenv').config();
 const https = require('https');
-const db = require('./mongo.js');
+const db = require('../data/mongo.js');
 const mongodb = new db();
 
 // create the function as a promise even if it returns a promise already.
@@ -15,10 +15,12 @@ let fetch = new Promise((reject, resolve) => {
     .catch(console.log);
 });
 
+
+
 // create the client here, currently i just want to use POST.
 fetch
   .then(function (users) {
-    mongodb.conn.close();
+    mongodb.disconnectdb(); // dc from mongo
 
     const options = {
       hostname: 'localhost',
@@ -28,7 +30,7 @@ fetch
       agent: false,
       rejectUnauthorized: false,
       headers: {
-        'Content-Length': Buffer.byteLength(JSON.stringify(users)),
+        'Content-Length': Buffer.byteLength(JSON.stringify(users, null, 2)),
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     };
@@ -49,7 +51,7 @@ fetch
       console.error(e);
     });
 
-    req.write(JSON.stringify(users));
+    req.write(JSON.stringify(users, null, 2));
     req.end();
   })
   .catch(console.log);

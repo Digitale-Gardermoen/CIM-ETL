@@ -1,6 +1,6 @@
 require('dotenv').config();
 const ActiveDirectory = require('activedirectory2');
-const db = require('./mongo.js');
+const db = require('../data/mongo.js');
 const mongodb = new db();
 
 // use a dictionary to translate the received object properties into the correct property names
@@ -60,6 +60,8 @@ function translateUserData(user) {
   return userObj;
 }
 
+
+
 async function importUser(userData) {
   // start the mongo import.
   // check if the user already exists, that way we can update the user.
@@ -112,8 +114,8 @@ ad.findUsers(opts, false, function (err, users) {
   });
   Promise.all(arr)
     .then(function () {
-      // close the db connection after all users have been updated/imported.
-      mongodb.conn.close();
+      // dc from mongo
+      mongodb.disconnectdb();
     })
     .catch(console.log);
 });
