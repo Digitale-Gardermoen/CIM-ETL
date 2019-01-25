@@ -12,7 +12,8 @@ check https://nodejs.org/api/tls.html#tls_tls_ssl_concepts for how i created the
 Done on Windows with git installed.
 
 ## Dependencies
-- activedirectory2
-- dotenv
-- mongoose
-- mongoDB
+- [node-gyp](https://github.com/nodejs/node-gyp)
+- [activedirectory2](https://www.npmjs.com/package/activedirectory2)
+- [dotenv](https://www.npmjs.com/package/dotenv)
+- [mongoose](https://www.npmjs.com/package/mongoose)
+- [mongoDB](https://www.mongodb.com/)
