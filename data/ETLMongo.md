@@ -1,25 +1,27 @@
-#MongoDB Certified: Best Practices for ETL Tools 
+# MongoDB Certified: Best Practices for ETL Tools 
 Extract, Transform, and Load (ETL) tools/applications that provide support for MongoDB should conform to the following Best Practices for certification against MongoDB Enterprise.
+
 **MongoDB Enterprise: https://www.mongodb.com/products/downloads/mongodb-enterprise**
 **Document is downloaded from: https://www.mongodb.com/partners/partner-program/technology/certification/etl-best-practices**
 
-##Security
-###Authentication
+
+## Security
+### Authentication
 - [ ] Application should support the ability to connect to a running MongoDB deployment that utilizes built-in authentication. Specifically, tools should provide the ability for users to specify a valid username and password to authenticate against MongoDB. For more information, refer to http://docs.mongodb.org/manual/core/authentication/#mongodb-cr-authentication
 
 - [ ] Application should support the ability to connect to a running MongoDB deployment that utilizes Kerberos (external) authentication. Specifically, tools should provide the ability for users to specify their Kerberos username and password to authenticate to the external authentication provider, via MongoDB. For more information, refer to http://docs.mongodb.org/manual/core/authentication/#kerberos-authentication
 
-###Encryption
+### Encryption
 - [ ] Application should support the ability to connect to a running MongoDB deployment that utilizes SSL to encrypt data in-transit between the application and the database. Tools should provide users the ability to connect with or without an SSL certificate. Users should be able to supply a CA or self-signed certificate and connect to the MongoDB deployment. For more information, refer to http://docs.mongodb.org/manual/tutorial/configure-ssl/
 
-##Connections
+## Connections
 - [ ] Application should connect to MongoDB deployments using the standard connection string URI format. Application should support the ability to connect to (i) an individual mongod process, (ii) a MongoDB replica set (using auto-discovery), or (iii) a mongos as a frontend to a sharded cluster. For more information, refer to http://docs.mongodb.org/manual/reference/connection-string/
 
 - [ ] Upon connection construction application should expose all possible MongoDB Read Preferences to the end user. For more information, refer to http://docs.mongodb.org/manual/core/read-preference/
 
 - [ ] Application should function as expected when authenticating as a user with read-only roles/permissions. For more information, refer to http://docs.mongodb.org/manual/reference/user-privileges/#read
 
-##Extract, Transform
+## Extract, Transform
 - [ ] Application should provide users the ability to easily map JSON elements within documents to downstream data structures. Specifically, application should support the ability to unwind simple arrays or represent embedded documents using appropriate data relationships (e.g. one-to-one, one-to-many, many-to-many). For more information, refer to http://docs.mongodb.org/manual/core/data-model-design/ and http://docs.mongodb.org/manual/applications/data-models-relationships/
 
 - [ ] Application should infer schema information by examining a subset of documents within target collections. 
@@ -38,7 +40,7 @@ Extract, Transform, and Load (ETL) tools/applications that provide support for M
 
 - [ ] For queries against MongoDB Sharded Clusters, application should strongly warn the user against queries that do not use proper query isolation. Broadcast queries in a sharded cluster can have a negative impact on database performance. For more information, refer to http://docs.mongodb.org/manual/core/sharding-shard-key/#querying
 
-##Load
+## Load
 - [ ] Application should support the ability to write data to any MongoDB deployment whether single node, replica set or sharded cluster.
 
 - [ ] For writes to a MongoDB sharded cluster, application should inform and/or display an error message to the user if documents do not contain a shard key. For more information, refer to http://docs.mongodb.org/manual/core/sharding-shard-key/#shard-key
