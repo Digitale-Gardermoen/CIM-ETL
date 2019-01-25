@@ -23,12 +23,19 @@ const userSchema = new Schema({
 
 class db {
   constructor() {
-    // establish connection, there is no particular reason for using createConnection in place of connect. This just worked. I belive both of them work...
-    this.conn = mongoose.createConnection(process.env.MONGO, {
-      useNewUrlParser: true
-    });
+    // establish connection, there is no particular reason for using createConnection in place of connect. This just worked.
+    this.conn = mongoose
+      .connect(
+        process.env.MONGO,
+        { useNewUrlParser: true },
+        function (err) {
+          if (err ) console.error('Failed to connect to mongo', err);
+        });
     // create the User model so we can run queries against the users collection.
-    this.User = this.conn.model('user', userSchema);
+    userSchema.post('updateOne', function() {
+      console.log('got updateOne')
+    });
+    this.User = mongoose.model('user', userSchema);
   }
 
   // get user by username, returns a callback function
@@ -48,8 +55,16 @@ class db {
 
   // fetch all documents in the users collection, returns an array.
   async fetchUsers() {
-    return this.User.find().exec();
+    let Query = this.User.find();
+    Query.select('-_id -__v');
+    return Query.exec();
   }
+
+  disconnectdb () {
+    mongoose.disconnect();
+    return;
+  }
+
 }
 
 module.exports = db;
