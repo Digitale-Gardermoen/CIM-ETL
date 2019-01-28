@@ -62,7 +62,30 @@ function translateUserData(user) {
 
 async function importUser(userData) {
   /* TODO: check if the user already exists, that way we can update the user. */
-  return mongodb.upsertUser(userData.user_import_id, userData);
+  return new Promise((resolve, reject) => {
+    mongodb.findUser(userData.user_import_id)
+      .then(function (res, err) {
+        if (err) {
+          console.log(err);
+          reject(err);
+          return;
+        }
+        if (!res) {
+          resolve(mongodb.upsertUser(userData.user_import_id, userData));
+        }
+        else {
+          res = res.toJSON();
+          Object.keys(res).forEach((key) => {                                   // loop over keys so we can get the values.
+            if (res[key] != userData[key]) {                                    // check if the values in the db is the same as the AD values.
+              console.log(key, 'is not equal');
+              resolve(mongodb.upsertUser(userData.user_import_id, userData));   // import the user if true.
+              return;
+            }
+          });
+        }
+      })
+      .catch(console.log);
+  });
 }
 
 const config = {
@@ -108,7 +131,7 @@ ad.findUsers(opts, false, function (err, users) {
 
   users.forEach(user => {                     // mark that this returns an object, not an array. Use the "forEach" function, dont use the array method.
     let userData = translateUserData(user);   // translate the data from AD, this way we can match property names when importing.
-    arr.push(importUser(userData));           // push the callback from the imported data into an array, this way we can force all promises to resolve.
+    importUser(userData);                     // push the callback from the imported data into an array, this way we can force all promises to resolve.
   });
 
   Promise.all(arr)

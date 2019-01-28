@@ -37,8 +37,10 @@ class db {
   }
 
   
-  async findUser(username) {
-    return this.User.find({ username: username }).exec();   // get user by username, returns a callback function
+  async findUser(sid) {
+    let Query = this.User.findOne({ user_import_id: sid })
+    Query.select('-_id -__v')
+    return Query.exec();   // get user by username, returns a callback function
   }
 
   // function to update a user, if it doesn't exist insert the user.
@@ -56,6 +58,10 @@ class db {
     let Query = this.User.find();
     Query.select('-_id -__v');
     return Query.exec();
+  }
+
+  async removeUser(sid) {
+    return this.User.remove({ user_import_id: sid }).exec();
   }
 
   disconnectdb() {

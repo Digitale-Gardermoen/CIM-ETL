@@ -23,7 +23,8 @@ let fetch = new Promise((reject, resolve) => {
 fetch
   .then(function (users) {
     mongodb.disconnectdb(); // dc from mongo
-
+    data = JSON.stringify(users, null, 2);
+    
     const options = {
       hostname: 'localhost',
       port: 8000,
@@ -32,7 +33,7 @@ fetch
       agent: false,
       rejectUnauthorized: false,
       headers: {
-        'Content-Length': Buffer.byteLength(JSON.stringify(users, null, 2)),
+        'Content-Length': Buffer.byteLength(data),
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     };
@@ -53,7 +54,7 @@ fetch
       console.error(e);
     });
 
-    req.write(JSON.stringify(users, null, 2));
+    req.write(data);
     req.end();
   })
   .catch(console.log);
