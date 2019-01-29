@@ -30,8 +30,9 @@ class db {
         function (err) {
           if (err) console.error('Failed to connect to mongo', err);    // this might be changed to do some better errorhandling later...
         });
-    userSchema.post('updateOne', function () {
-      console.log('got updateOne')
+    userSchema.post('updateOne', function (next) {
+      console.log('got updateOne');
+      console.log()
     });
     this.User = mongoose.model('user', userSchema);   // create the User model so we can run queries against the users collection.
   }
@@ -61,7 +62,7 @@ class db {
   }
 
   async removeUser(sid) {
-    return this.User.remove({ user_import_id: sid }).exec();
+    return this.User.deleteOne({ user_import_id: sid }).exec();
   }
 
   disconnectdb() {

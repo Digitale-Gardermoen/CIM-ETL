@@ -88,6 +88,16 @@ async function importUser(userData) {
   });
 }
 
+let fetch = new Promise((reject, resolve) => {
+  mongodb
+    .fetchUsers()
+    .then(function (err, res) {
+      if (err) reject(err);
+      resolve(res);
+    })
+    .catch(console.log);
+});
+
 const config = {
   url: process.env.LDAPSTR,       // ex: "ldap://10.0.0.1"
   baseDN: process.env.BASEDN,     // ex: "DC=AD,DC=DOMAIN,DC=NO"
@@ -127,12 +137,33 @@ ad.findUsers(opts, false, function (err, users) {
   }
 
   /* TODO: Replace this array with a function or a Promise, this way we dont have to use this haggard method... */
-  let arr = []; // create an array to hold callback data.
+  let arr = [];     // create an array to hold callback data.
+  let sidArr = [];  // create array to hold SIDs.
+
+  users.forEach(user => {
+    sidArr.push(user.objectSid);  // push the SIDs to the array
+  });
 
   users.forEach(user => {                     // mark that this returns an object, not an array. Use the "forEach" function, dont use the array method.
     let userData = translateUserData(user);   // translate the data from AD, this way we can match property names when importing.
-    importUser(userData);                     // push the callback from the imported data into an array, this way we can force all promises to resolve.
+    arr.push(importUser(userData));           // push the callback from the imported data into an array, this way we can force all promises to resolve.
   });
+
+  fetch
+    .then(function (mUsers) {
+      mUsers.forEach(user => {                // loop over all users in the db, we want to check each user.
+        let exists = false;                   // create a var to change if it exists.
+        sidArr.forEach(sid => {               // loop over the sids in the array we made earlier.
+          if (user.user_import_id === sid) {  // check if the users "importid(SID)" equals type and content.
+            exists = true;                    // set to true if true :)
+          }
+        });
+        if (!exists) {                        // check if exists is false and call removeUser if so.
+          mongodb.removeUser(user.user_import_id);
+        }
+      });
+    })
+    .catch(console.log);
 
   Promise.all(arr)
     .then(function () {
