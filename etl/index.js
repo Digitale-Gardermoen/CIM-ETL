@@ -13,12 +13,12 @@ const translateDict = {
   mail: 'email',
   objectSid: 'user_import_id',  // using objectSid as a import ID, seems like objectGUID sent something different than what you see in AD.
   employeeID: 'employee_id',
-  company: 'org_import_id',
   title: 'job_title',
-  description: 'description'
+  description: 'description',
+  objectClass: 'person_type'
 };
 
-/* TO BE CHANGED */
+/* TO BE CHANGED, waiting for schema update */
 const userTemplate = {
   lastname: '',
   firstname: '',
@@ -58,10 +58,7 @@ function translateUserData(user) {
   return userObj;
 }
 
-
-
 async function importUser(userData) {
-  /* TODO: check if the user already exists, that way we can update the user. */
   return new Promise((resolve, reject) => {
     mongodb.findUser(userData.user_import_id)
       .then(function (res, err) {
@@ -71,7 +68,7 @@ async function importUser(userData) {
           return;
         }
         if (!res) {
-          resolve(mongodb.upsertUser(userData.user_import_id, userData));
+          resolve(mongodb.upsertUser(userData.user_import_id, userData));       // this only runs if the user does not exists in mongo.
         }
         else {
           res = res.toJSON();
@@ -113,9 +110,9 @@ const config = {
       'mail',
       'objectSid',
       'employeeID',
-      'company',
       'title',
-      'description'
+      'description',
+      'objectClass'
     ]
   }
 };
@@ -145,6 +142,7 @@ ad.findUsers(opts, false, function (err, users) {
   });
 
   users.forEach(user => {                     // mark that this returns an object, not an array. Use the "forEach" function, dont use the array method.
+    user.objectClass = 'user';                // currently just used set the person_type to user, we are only fetching users.
     let userData = translateUserData(user);   // translate the data from AD, this way we can match property names when importing.
     arr.push(importUser(userData));           // push the callback from the imported data into an array, this way we can force all promises to resolve.
   });

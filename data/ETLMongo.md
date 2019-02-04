@@ -7,7 +7,7 @@ Extract, Transform, and Load (ETL) tools/applications that provide support for M
 
 ## Security
 ### Authentication
-- [ ] Application should support the ability to connect to a running MongoDB deployment that utilizes built-in authentication. Specifically, tools should provide the ability for users to specify a valid username and password to authenticate against MongoDB. For more information, refer to http://docs.mongodb.org/manual/core/authentication/#mongodb-cr-authentication
+- [x] Application should support the ability to connect to a running MongoDB deployment that utilizes built-in authentication. Specifically, tools should provide the ability for users to specify a valid username and password to authenticate against MongoDB. For more information, refer to http://docs.mongodb.org/manual/core/authentication/#mongodb-cr-authentication
 
 - [ ] Application should support the ability to connect to a running MongoDB deployment that utilizes Kerberos (external) authentication. Specifically, tools should provide the ability for users to specify their Kerberos username and password to authenticate to the external authentication provider, via MongoDB. For more information, refer to http://docs.mongodb.org/manual/core/authentication/#kerberos-authentication
 
@@ -15,14 +15,14 @@ Extract, Transform, and Load (ETL) tools/applications that provide support for M
 - [ ] Application should support the ability to connect to a running MongoDB deployment that utilizes SSL to encrypt data in-transit between the application and the database. Tools should provide users the ability to connect with or without an SSL certificate. Users should be able to supply a CA or self-signed certificate and connect to the MongoDB deployment. For more information, refer to http://docs.mongodb.org/manual/tutorial/configure-ssl/
 
 ## Connections
-- [ ] Application should connect to MongoDB deployments using the standard connection string URI format. Application should support the ability to connect to (i) an individual mongod process, (ii) a MongoDB replica set (using auto-discovery), or (iii) a mongos as a frontend to a sharded cluster. For more information, refer to http://docs.mongodb.org/manual/reference/connection-string/
+- [x] Application should connect to MongoDB deployments using the standard connection string URI format. Application should support the ability to connect to (i) an individual mongod process, (ii) a MongoDB replica set (using auto-discovery), or (iii) a mongos as a frontend to a sharded cluster. For more information, refer to http://docs.mongodb.org/manual/reference/connection-string/
 
 - [ ] Upon connection construction application should expose all possible MongoDB Read Preferences to the end user. For more information, refer to http://docs.mongodb.org/manual/core/read-preference/
 
-- [ ] Application should function as expected when authenticating as a user with read-only roles/permissions. For more information, refer to http://docs.mongodb.org/manual/reference/user-privileges/#read
+- [x] Application should function as expected when authenticating as a user with read-only roles/permissions. For more information, refer to http://docs.mongodb.org/manual/reference/user-privileges/#read
 
 ## Extract, Transform
-- [ ] Application should provide users the ability to easily map JSON elements within documents to downstream data structures. Specifically, application should support the ability to unwind simple arrays or represent embedded documents using appropriate data relationships (e.g. one-to-one, one-to-many, many-to-many). For more information, refer to http://docs.mongodb.org/manual/core/data-model-design/ and http://docs.mongodb.org/manual/applications/data-models-relationships/
+- [x] Application should provide users the ability to easily map JSON elements within documents to downstream data structures. Specifically, application should support the ability to unwind simple arrays or represent embedded documents using appropriate data relationships (e.g. one-to-one, one-to-many, many-to-many). For more information, refer to http://docs.mongodb.org/manual/core/data-model-design/ and http://docs.mongodb.org/manual/applications/data-models-relationships/
 
 - [ ] Application should infer schema information by examining a subset of documents within target collections. 
 
@@ -41,14 +41,14 @@ Extract, Transform, and Load (ETL) tools/applications that provide support for M
 - [ ] For queries against MongoDB Sharded Clusters, application should strongly warn the user against queries that do not use proper query isolation. Broadcast queries in a sharded cluster can have a negative impact on database performance. For more information, refer to http://docs.mongodb.org/manual/core/sharding-shard-key/#querying
 
 ## Load
-- [ ] Application should support the ability to write data to any MongoDB deployment whether single node, replica set or sharded cluster.
+- [x] Application should support the ability to write data to any MongoDB deployment whether single node, replica set or sharded cluster.
 
 - [ ] For writes to a MongoDB sharded cluster, application should inform and/or display an error message to the user if documents do not contain a shard key. For more information, refer to http://docs.mongodb.org/manual/core/sharding-shard-key/#shard-key
 
 - [ ] Application should allow users to set a custom WriteConcern for any and all write operations to a running MongoDB deployment. For more information, refer to http://docs.mongodb.org/manual/core/write-concern/
 
-- [ ] For bulk loading operations, application should support writing documents in batches using the insert() method (and provide support for ordered and unordered operations with MongoDB 2.6 and above). For more information, refer to http://docs.mongodb.org/manual/core/bulk-inserts/#use-the-insert-method and http://docs.mongodb.org/manual/reference/command/insert/#insert
+- [x] For bulk loading operations, application should support writing documents in batches using the insert() method (and provide support for ordered and unordered operations with MongoDB 2.6 and above). For more information, refer to http://docs.mongodb.org/manual/core/bulk-inserts/#use-the-insert-method and http://docs.mongodb.org/manual/reference/command/insert/#insert
 
-- [ ] For bulk update operations with MongoDB 2.6 and above, application should support the bulk update database command (which supports ordered and unordered operations). For more information, refer to http://docs.mongodb.org/manual/reference/command/update/#dbcmd.update
+- [x] For bulk update operations with MongoDB 2.6 and above, application should support the bulk update database command (which supports ordered and unordered operations). For more information, refer to http://docs.mongodb.org/manual/reference/command/update/#dbcmd.update
 
-- [ ] For bulk loading into a MongoDB sharded deployment, application should leverage best practices for bulk inserts into a sharded collection. Specifically, this includes pre-splitting the collection’s shard key and inserting via multiple mongos processes. For more informaiton, refer to http://docs.mongodb.org/manual/core/bulk-inserts/#bulk-inserts-on-sharded-clusters
+- [x] For bulk loading into a MongoDB sharded deployment, application should leverage best practices for bulk inserts into a sharded collection. Specifically, this includes pre-splitting the collection’s shard key and inserting via multiple mongos processes. For more informaiton, refer to http://docs.mongodb.org/manual/core/bulk-inserts/#bulk-inserts-on-sharded-clusters

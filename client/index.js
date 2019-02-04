@@ -1,6 +1,6 @@
 require('dotenv').config();
 const https = require('https');
-const db = require('../data/mongo.js');
+const db = require('../data/mongo.js'); // remove the db import in this file. I want the ETL file to do this.
 const mongodb = new db();
 
 // create the function as a promise even if it returns a promise already.

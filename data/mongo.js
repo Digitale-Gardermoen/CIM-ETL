@@ -25,14 +25,24 @@ class db {
   constructor() {
     this.conn = mongoose
       .connect(
-        process.env.MONGO,
-        { useNewUrlParser: true },
+        process.env.MONGO, {
+          useNewUrlParser: true,
+          user: process.env.MUSER,
+          pass: process.env.MPW,
+          dbName: process.env.MDBNAME
+        },
         function (err) {
           if (err) console.error('Failed to connect to mongo', err);    // this might be changed to do some better errorhandling later...
         });
-    userSchema.post('updateOne', function (next) {
+    userSchema.post('updateOne', function () {
+      /* TODO: make this send the updated user to the client */
       console.log('got updateOne');
-      console.log()
+      console.log(this._conditions.user_import_id);
+    });
+    userSchema.post('deleteOne', function () {
+      /* TODO: make this send the deleted user to the client */
+      console.log('got deleteOne');
+      console.log(this._conditions.user_import_id);
     });
     this.User = mongoose.model('user', userSchema);   // create the User model so we can run queries against the users collection.
   }
