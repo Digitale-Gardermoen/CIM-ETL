@@ -8,17 +8,17 @@ const translateDict = {
   sn: 'lastname',
   givenName: 'firstname',
   sAMAccountName: 'username',
+  objectSid: 'user_import_id',  // using objectSid as a import ID, seems like objectGUID sent something different than what you see in AD.
   mobile: 'job_mobile',
   telephoneNumber: 'job_phone',
   mail: 'email',
-  objectSid: 'user_import_id',  // using objectSid as a import ID, seems like objectGUID sent something different than what you see in AD.
   employeeID: 'employee_id',
   title: 'job_title',
   description: 'description',
   objectClass: 'person_type'
 };
 
-/* TO BE CHANGED, waiting for schema update */
+// check importTemplate.json for what fields we can import. currently we pass all values to null and fill them after exporting from AD.
 const userTemplate = {
   lastname: '',
   firstname: '',
@@ -26,16 +26,14 @@ const userTemplate = {
   user_import_id: '',
   job_mobile: '',
   job_phone: '',
-  email: '',
-  email_secondary: '',
-  org_import_id: '',
-  location_import_id: '',
-  timezonee: '',
+  email: null,
+  email_secondary: null,
+  timezone: null,
   employee_id: '',
   job_title: '',
   roles: '',
   person_type: '',
-  dist_list: '',
+  dist_list: null,
   description: ''
 };
 
@@ -147,9 +145,10 @@ ad.findUsers(opts, false, function (err, users) {
     arr.push(importUser(userData));           // push the callback from the imported data into an array, this way we can force all promises to resolve.
   });
 
+  // run fetch since we want to check if the the users exists in the mongodb
   fetch
     .then(function (mUsers) {
-      mUsers.forEach(user => {                // loop over all users in the db, we want to check each user.
+      mUsers.forEach(user => {                // loop over all users in the db.
         let exists = false;                   // create a var to change if it exists.
         sidArr.forEach(sid => {               // loop over the sids in the array we made earlier.
           if (user.user_import_id === sid) {  // check if the users "importid(SID)" equals type and content.

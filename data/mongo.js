@@ -10,8 +10,6 @@ const userSchema = new Schema({
   job_phone: String,
   email: String,
   email_secondary: String,
-  org_import_id: String,
-  location_import_id: String,
   timezone: String,
   employee_id: String,
   job_title: String,
@@ -51,6 +49,13 @@ class db {
   async findUser(sid) {
     let Query = this.User.findOne({ user_import_id: sid })
     Query.select('-_id -__v')
+    return Query.exec();   // get user by UII/SID, returns a callback function
+  }
+
+  /* will be removed */
+  async usernameTest(username) {
+    let Query = this.User.findOne({ username: username })
+    Query.select('-_id -__v -job_phone')
     return Query.exec();   // get user by username, returns a callback function
   }
 

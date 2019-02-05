@@ -17,3 +17,4 @@ Done on Windows with git installed.
 - [dotenv](https://www.npmjs.com/package/dotenv)
 - [mongoose](https://www.npmjs.com/package/mongoose)
 - [mongoDB](https://www.mongodb.com/)
+- [node-cron](https://www.npmjs.com/package/node-cron)
