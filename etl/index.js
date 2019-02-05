@@ -8,17 +8,17 @@ const translateDict = {
   sn: 'lastname',
   givenName: 'firstname',
   sAMAccountName: 'username',
+  objectSid: 'user_import_id',  // using objectSid as a import ID, seems like objectGUID sent something different than what you see in AD.
   mobile: 'job_mobile',
   telephoneNumber: 'job_phone',
   mail: 'email',
-  objectSid: 'user_import_id',  // using objectSid as a import ID, seems like objectGUID sent something different than what you see in AD.
   employeeID: 'employee_id',
-  company: 'org_import_id',
   title: 'job_title',
-  description: 'description'
+  description: 'description',
+  objectClass: 'person_type'
 };
 
-/* TO BE CHANGED */
+// check importTemplate.json for what fields we can import. currently we pass all values to null and fill them after exporting from AD.
 const userTemplate = {
   lastname: '',
   firstname: '',
@@ -26,16 +26,14 @@ const userTemplate = {
   user_import_id: '',
   job_mobile: '',
   job_phone: '',
-  email: '',
-  email_secondary: '',
-  org_import_id: '',
-  location_import_id: '',
-  timezonee: '',
+  email: null,
+  email_secondary: null,
+  timezone: null,
   employee_id: '',
   job_title: '',
   roles: '',
   person_type: '',
-  dist_list: '',
+  dist_list: null,
   description: ''
 };
 
@@ -58,12 +56,42 @@ function translateUserData(user) {
   return userObj;
 }
 
-
-
 async function importUser(userData) {
-  /* TODO: check if the user already exists, that way we can update the user. */
-  return mongodb.upsertUser(userData.user_import_id, userData);
+  return new Promise((resolve, reject) => {
+    mongodb.findUser(userData.user_import_id)
+      .then(function (res, err) {
+        if (err) {
+          console.log(err);
+          reject(err);
+          return;
+        }
+        if (!res) {
+          resolve(mongodb.upsertUser(userData.user_import_id, userData));       // this only runs if the user does not exists in mongo.
+        }
+        else {
+          res = res.toJSON();
+          Object.keys(res).forEach((key) => {                                   // loop over keys so we can get the values.
+            if (res[key] != userData[key]) {                                    // check if the values in the db is the same as the AD values.
+              console.log(key, 'is not equal');
+              resolve(mongodb.upsertUser(userData.user_import_id, userData));   // import the user if true.
+              return;
+            }
+          });
+        }
+      })
+      .catch(console.log);
+  });
 }
+
+let fetch = new Promise((reject, resolve) => {
+  mongodb
+    .fetchUsers()
+    .then(function (err, res) {
+      if (err) reject(err);
+      resolve(res);
+    })
+    .catch(console.log);
+});
 
 const config = {
   url: process.env.LDAPSTR,       // ex: "ldap://10.0.0.1"
@@ -80,9 +108,9 @@ const config = {
       'mail',
       'objectSid',
       'employeeID',
-      'company',
       'title',
-      'description'
+      'description',
+      'objectClass'
     ]
   }
 };
@@ -104,12 +132,35 @@ ad.findUsers(opts, false, function (err, users) {
   }
 
   /* TODO: Replace this array with a function or a Promise, this way we dont have to use this haggard method... */
-  let arr = []; // create an array to hold callback data.
+  let arr = [];     // create an array to hold callback data.
+  let sidArr = [];  // create array to hold SIDs.
+
+  users.forEach(user => {
+    sidArr.push(user.objectSid);  // push the SIDs to the array
+  });
 
   users.forEach(user => {                     // mark that this returns an object, not an array. Use the "forEach" function, dont use the array method.
+    user.objectClass = 'user';                // currently just used set the person_type to user, we are only fetching users.
     let userData = translateUserData(user);   // translate the data from AD, this way we can match property names when importing.
     arr.push(importUser(userData));           // push the callback from the imported data into an array, this way we can force all promises to resolve.
   });
+
+  // run fetch since we want to check if the the users exists in the mongodb
+  fetch
+    .then(function (mUsers) {
+      mUsers.forEach(user => {                // loop over all users in the db.
+        let exists = false;                   // create a var to change if it exists.
+        sidArr.forEach(sid => {               // loop over the sids in the array we made earlier.
+          if (user.user_import_id === sid) {  // check if the users "importid(SID)" equals type and content.
+            exists = true;                    // set to true if true :)
+          }
+        });
+        if (!exists) {                        // check if exists is false and call removeUser if so.
+          mongodb.removeUser(user.user_import_id);
+        }
+      });
+    })
+    .catch(console.log);
 
   Promise.all(arr)
     .then(function () {
