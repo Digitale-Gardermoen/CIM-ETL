@@ -32,19 +32,25 @@ class db {
         function (err) {
           if (err) console.error('Failed to connect to mongo', err);    // this might be changed to do some better errorhandling later...
         });
-    userSchema.post('updateOne', function () {
-      /* TODO: make this send the updated user to the client */
+
+    let updateArr = [];
+
+    userSchema.post('updateOne', function (doc) {
+      /* TODO: make this send the updated users to the client */
       console.log('got updateOne');
-      console.log(this._conditions.user_import_id);
+      console.log(doc.result.upserted[0]._id);
+      updateArr.push(doc.result.upserted[0]._id);
+      console.log(updateArr);
     });
+
     userSchema.post('deleteOne', function () {
       /* TODO: make this send the deleted user to the client */
       console.log('got deleteOne');
       console.log(this._conditions.user_import_id);
     });
+
     this.User = mongoose.model('user', userSchema);   // create the User model so we can run queries against the users collection.
   }
-
   
   async findUser(sid) {
     let Query = this.User.findOne({ user_import_id: sid })
@@ -71,9 +77,10 @@ class db {
 
   // fetch all documents in the users collection, returns an array.
   async fetchUsers() {
-    let Query = this.User.find();
-    Query.select('-_id -__v');
-    return Query.exec();
+    return this.User
+      .find()
+      .select('-_id -__v')
+      .exec();
   }
 
   async removeUser(sid) {

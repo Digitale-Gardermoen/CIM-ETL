@@ -19,6 +19,7 @@ const translateDict = {
 };
 
 // check importTemplate.json for what fields we can import. currently we pass all values to null and fill them after exporting from AD.
+/* might have to remove this file as it created nulls and other empty values. Some of these doesnt work with the current API. */
 const userTemplate = {
   lastname: '',
   firstname: '',
@@ -64,6 +65,12 @@ async function importUser(userData) {
           console.log(err);
           reject(err);
           return;
+        }
+        if (!userData.job_phone) {      // we check the job and mobile phone in the case they are null or empty string.
+          delete userData.job_phone;    // the API we send this to do not accept empty string as a phone number, so the regex doesnt work on them.
+        }
+        if (!userData.job_mobile) {     // thats why we remove it and dont send it at all.
+          delete userData.job_mobile;
         }
         if (!res) {
           resolve(mongodb.upsertUser(userData.user_import_id, userData));       // this only runs if the user does not exists in mongo.
@@ -145,6 +152,8 @@ ad.findUsers(opts, false, function (err, users) {
     arr.push(importUser(userData));           // push the callback from the imported data into an array, this way we can force all promises to resolve.
   });
 
+  
+  
   // run fetch since we want to check if the the users exists in the mongodb
   fetch
     .then(function (mUsers) {

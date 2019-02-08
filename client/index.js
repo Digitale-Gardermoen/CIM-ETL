@@ -7,7 +7,7 @@ const mongodb = new db();
 // for some reason this works to resolve the Promise, but doing it without makes the function return an unresolved Promise.
 let fetch = new Promise((reject, resolve) => {
   mongodb
-    .usernameTest('kimtest1-orb') // will be changed back to fetchusers.
+    .fetchUsers()
     .then(function (err, res) {
       if (err) reject(err);
       resolve(res);
@@ -91,9 +91,9 @@ function deleteCIM(data) {
 
 /* TO BE CHANGED *//* I want to have this in a function, as it will be a common Job. */
 fetch
-  .then(function (users) {
+  .then(async function (users) {
     mongodb.disconnectdb(); // dc from mongo
-    data = '[' + JSON.stringify(users, null, 2) + ']';  // data has to be string to get the length. ALSO needs to be an array even if only one i returned.
+    data = JSON.stringify(users, null, 2);  // data has to be string to get the length. ALSO needs to be an array even if only one i returned.
     upsertCIM(data);
   })
   .catch(console.log);
