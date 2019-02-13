@@ -43,7 +43,7 @@ class db {
     Query.select('-_id -__v')
     return Query.exec();   // get user by UII/SID, returns a callback function
   }
-  
+
   // function to update a user, if it doesn't exist insert the user.
   // NOTE: this updates even if the user document has that same data. this is to be changed in the ETL layer.
   async upsertUser(SID, userObj) {
@@ -53,40 +53,55 @@ class db {
       { upsert: true }
     );
   }
-  
+
   // fetch all documents in the users collection, returns an array.
   async fetchUsers() {
     return this.User
-    .find()
-    .select('-_id -__v')
-    .exec();
+      .find()
+      .select('-_id -__v')
+      .exec();
   }
-  
+
   async removeUser(sid) {
     return this.User.deleteOne({ user_import_id: sid }).exec();
   }
-  
+
   async findCIMUser(sid) {
     return this.CIMUser.findOne({ user_import_id: sid })
-    .select('-_id -__v')
-    .exec();   // get user by UII/SID, returns a promise
+      .select('-_id -__v')
+      .exec();   // get user by UII/SID, returns a promise
+  }
+
+  async fetchCIMUsersBySID(sidArr) {
+    return this.CIMUser
+      .find()
+      .select('-_id -__v')
+      .where({ user_import_id: sidArr })
+      .exec();
   }
 
   async fetchCIMUsers() {
     return this.CIMUser
-    .find()
-    .select('-_id -__v')
-    .exec();
+      .find()
+      .select('-_id -__v')
+      .exec();
   }
-  
-  async upsertCIMUser(SID, userObj) {
+
+  async upsertCIMUser(SID, userObj, unset) {
+    if (Object.keys(unset).length !== 0) {
+      return this.CIMUser.updateOne(
+        { user_import_id: SID },
+        { $unset: unset, $set: userObj },
+        { upsert: true }
+      );
+    }
     return this.CIMUser.updateOne(
       { user_import_id: SID },
       { $set: userObj },
       { upsert: true }
     );
   }
-  
+
   async removeCIMUser(sid) {
     return this.CIMUser.deleteOne({ user_import_id: sid }).exec();
   }

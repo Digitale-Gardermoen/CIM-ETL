@@ -24,7 +24,7 @@ const userTemplate = {
   email: null,
   email_secondary: null,
   timezone: null,
-  dist_list: null,
+  dist_list: null
 };
 
 function getClone(obj) {

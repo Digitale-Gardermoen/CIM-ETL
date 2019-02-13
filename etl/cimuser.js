@@ -12,9 +12,13 @@ class CimLoader {
   async getUsers() {
     return cimUsers.fetchCIMUsers();
   }
+  
+  async getUsersBySid(sidArr) {
+    return cimUsers.fetchCIMUsersBySID(sidArr);
+  }
 
-  async setUser(SID, userObj) {
-    return cimUsers.upsertCIMUser(SID, userObj);
+  async setUser(SID, userObj, unset) {
+    return cimUsers.upsertCIMUser(SID, userObj, unset);
   }
 
   async removeUser(SID) {
