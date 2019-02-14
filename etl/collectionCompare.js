@@ -1,36 +1,42 @@
 async function upsertUsers(destination, diff, user) {
-  console.log('checking user: ', user.username);
-  await destination.findUser(user.user_import_id)
-    .then(async function (res, err) {
-      if (err) {
-        console.log(err);
-        return err;
-      }
-      if (!res) {
-        console.log(user.username, ' doesn\'t exist');
-        diff.upserted.push(user.user_import_id);
-        await destination.setUser(user.user_import_id, user);
-      }
-      else {
-        res = res.toJSON();
-        Object.keys(res).forEach(async (key) => {             // loop over keys so we can get the values.
-          if (res[key] != user[key]) {                  // check if the values in the db is the same as the AD values.
-            let unset = {};
-            if (!user[key]) {
-              unset[key] = "";
-            }
-            if (user[key] && !res[key]) {
+  let duser = await destination.findUser(user.user_import_id);
+  try {
+    let action;
+    if (!duser) {
+      console.log(user.username, ' doesn\'t exist');
+      diff.upserted.push(user.user_import_id);
+      action = await destination.setUser(user.user_import_id, user, {});
+      return action;
+    }
+    else {
+      let adProperties = {};
+      Object.keys(user._doc)
+        .filter((prop) => Object.keys(duser._doc).indexOf(prop) < 0)
+        .forEach(key => adProperties[key] = user[key]);
 
-            }
-            console.log(key, 'is not equal for user', user.username);
-            diff.upserted.push(user.user_import_id);
-            await destination.setUser(user.user_import_id, user, unset); // import the user if true.
-            return;
-          }
-        });
-      }
-    })
-    .catch(console.log)
+      let cimProperties = {};
+      Object.keys(duser._doc)
+        .filter((prop) => Object.keys(user._doc).indexOf(prop) < 0)
+        .forEach(key => cimProperties[key] = '');
+
+      Object.keys(user._doc).forEach(key => {
+        if (duser[key] != user[key]) {
+          adProperties[key] = user[key];
+        }
+      });
+
+      if (Object.keys(adProperties).length === 0 && Object.keys(cimProperties).length === 0) {
+        return;
+      };
+
+      diff.upserted.push(user.user_import_id);
+      action = await destination.setUser(user.user_import_id, adProperties, cimProperties);
+      return action;
+    }
+  }
+  catch (err) {
+    console.log(err);
+  }
 }
 
 async function removeUsers(destination, sidArr, diff) {

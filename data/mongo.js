@@ -88,18 +88,27 @@ class db {
   }
 
   async upsertCIMUser(SID, userObj, unset) {
-    if (Object.keys(unset).length !== 0) {
+    if (Object.keys(unset).length !== 0 && Object.keys(userObj).length !== 0) {
       return this.CIMUser.updateOne(
         { user_import_id: SID },
         { $unset: unset, $set: userObj },
         { upsert: true }
       );
     }
-    return this.CIMUser.updateOne(
-      { user_import_id: SID },
-      { $set: userObj },
-      { upsert: true }
-    );
+    else if (Object.keys(unset).length !== 0 && Object.keys(userObj).length === 0) {
+      return this.CIMUser.updateOne(
+        { user_import_id: SID },
+        { $unset: unset },
+        { upsert: true }
+      );
+    }
+    else {
+      return this.CIMUser.updateOne(
+        { user_import_id: SID },
+        { $set: userObj },
+        { upsert: true }
+      );
+    }
   }
 
   async removeCIMUser(sid) {
