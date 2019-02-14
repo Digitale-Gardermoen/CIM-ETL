@@ -6,11 +6,6 @@ It is solely meant as a "sync" between AD and another system.
 
 **This app will not transform ANY data in AD, it only needs permission to read.**
 
-## Testserver
-Currently the testserver uses self signed certs.
-check https://nodejs.org/api/tls.html#tls_tls_ssl_concepts for how i created them.
-Done on Windows with git installed.
-
 ## Dependencies
 - [node-gyp](https://github.com/nodejs/node-gyp)
 - [activedirectory2](https://www.npmjs.com/package/activedirectory2)

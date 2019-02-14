@@ -21,42 +21,27 @@ const userSchema = new Schema({
 
 class db {
   constructor() {
-    this.conn = mongoose
-      .connect(
-        process.env.MONGO, {
-          useNewUrlParser: true,
-          user: process.env.MUSER,
-          pass: process.env.MPW,
-          dbName: process.env.MDBNAME
-        },
-        function (err) {
-          if (err) console.error('Failed to connect to mongo', err);    // this might be changed to do some better errorhandling later...
-        });
-    userSchema.post('updateOne', function () {
-      /* TODO: make this send the updated user to the client */
-      console.log('got updateOne');
-      console.log(this._conditions.user_import_id);
-    });
-    userSchema.post('deleteOne', function () {
-      /* TODO: make this send the deleted user to the client */
-      console.log('got deleteOne');
-      console.log(this._conditions.user_import_id);
-    });
-    this.User = mongoose.model('user', userSchema);   // create the User model so we can run queries against the users collection.
+    this.conn = mongoose.connect(
+      process.env.MONGO, {
+        useNewUrlParser: true,
+        user: process.env.MUSER,
+        pass: process.env.MPW,
+        dbName: process.env.MDBNAME
+      },
+      function (err) {
+        if (err) console.error('Failed to connect to mongo', err);    // this might be changed to do some better errorhandling later...
+      }
+    );
+
+    this.User = mongoose.model('user', userSchema);
+    this.CIMUser = mongoose.model('cimuser', userSchema);
+    this.ADUser = mongoose.model('aduser', userSchema);
   }
 
-  
   async findUser(sid) {
     let Query = this.User.findOne({ user_import_id: sid })
     Query.select('-_id -__v')
     return Query.exec();   // get user by UII/SID, returns a callback function
-  }
-
-  /* will be removed */
-  async usernameTest(username) {
-    let Query = this.User.findOne({ username: username })
-    Query.select('-_id -__v -job_phone')
-    return Query.exec();   // get user by username, returns a callback function
   }
 
   // function to update a user, if it doesn't exist insert the user.
@@ -71,13 +56,78 @@ class db {
 
   // fetch all documents in the users collection, returns an array.
   async fetchUsers() {
-    let Query = this.User.find();
-    Query.select('-_id -__v');
-    return Query.exec();
+    return this.User
+      .find()
+      .select('-_id -__v')
+      .exec();
   }
 
   async removeUser(sid) {
     return this.User.deleteOne({ user_import_id: sid }).exec();
+  }
+
+  async findCIMUser(sid) {
+    return this.CIMUser.findOne({ user_import_id: sid })
+      .select('-_id -__v')
+      .exec();   // get user by UII/SID, returns a promise
+  }
+
+  async fetchCIMUsersBySID(sidArr) {
+    return this.CIMUser
+      .find()
+      .select('-_id -__v')
+      .where({ user_import_id: sidArr })
+      .exec();
+  }
+
+  async fetchCIMUsers() {
+    return this.CIMUser
+      .find()
+      .select('-_id -__v')
+      .exec();
+  }
+
+  async upsertCIMUser(SID, userObj, unset) {
+    if (Object.keys(unset).length !== 0 && Object.keys(userObj).length !== 0) {
+      return this.CIMUser.updateOne(
+        { user_import_id: SID },
+        { $unset: unset, $set: userObj },
+        { upsert: true }
+      );
+    }
+    else if (Object.keys(unset).length !== 0 && Object.keys(userObj).length === 0) {
+      return this.CIMUser.updateOne(
+        { user_import_id: SID },
+        { $unset: unset },
+        { upsert: true }
+      );
+    }
+    else {
+      return this.CIMUser.updateOne(
+        { user_import_id: SID },
+        { $set: userObj },
+        { upsert: true }
+      );
+    }
+  }
+
+  async removeCIMUser(sid) {
+    return this.CIMUser.deleteOne({ user_import_id: sid }).exec();
+  }
+
+  async fetchADUsers() {
+    return this.ADUser
+      .find()
+      .select('-_id -__v')
+      .exec();
+  }
+
+  async insertADUsers(userData) {
+    return this.ADUser.insertMany(userData);  // give this function an array of objects.
+  }
+
+  async deleteADUsers() {
+    return this.ADUser.deleteMany({}).exec(); // delete all AD users from the mongodb.
   }
 
   disconnectdb() {
