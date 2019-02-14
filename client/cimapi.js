@@ -78,3 +78,5 @@ class CimApi {
     req.end();
   }
 }
+
+module.exports = CimApi;
