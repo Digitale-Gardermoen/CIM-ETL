@@ -33,37 +33,8 @@ class db {
       }
     );
 
-    this.User = mongoose.model('user', userSchema);
     this.CIMUser = mongoose.model('cimuser', userSchema);
     this.ADUser = mongoose.model('aduser', userSchema);
-  }
-
-  async findUser(sid) {
-    let Query = this.User.findOne({ user_import_id: sid })
-    Query.select('-_id -__v')
-    return Query.exec();   // get user by UII/SID, returns a callback function
-  }
-
-  // function to update a user, if it doesn't exist insert the user.
-  // NOTE: this updates even if the user document has that same data. this is to be changed in the ETL layer.
-  async upsertUser(SID, userObj) {
-    return this.User.updateOne(
-      { user_import_id: SID },
-      { $set: userObj },
-      { upsert: true }
-    );
-  }
-
-  // fetch all documents in the users collection, returns an array.
-  async fetchUsers() {
-    return this.User
-      .find()
-      .select('-_id -__v')
-      .exec();
-  }
-
-  async removeUser(sid) {
-    return this.User.deleteOne({ user_import_id: sid }).exec();
   }
 
   async findCIMUser(sid) {
