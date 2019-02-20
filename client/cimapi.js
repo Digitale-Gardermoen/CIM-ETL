@@ -7,11 +7,11 @@ class CimApi {
   upsert(data) {
     const options = {
       protocol: 'https:',
-      hostname: process.env.HTTPSHOST,
+      hostname: process.env.HTTPS_HOST,
       port: 443,
-      path: process.env.HTTPSUSRT,
+      path: process.env.HTTPS_UPSERT,
       method: 'POST',
-      auth: process.env.HTTPSAUTH,
+      auth: process.env.HTTPS_AUTHENTICATION,
       agent: false,
       headers: {
         'Content-Length': Buffer.byteLength(data),
@@ -44,11 +44,11 @@ class CimApi {
   delete(data) {
     const options = {
       protocol: 'https:',
-      hostname: process.env.HTTPSHOST,
+      hostname: process.env.HTTPS_HOST,
       port: 443,
-      path: process.env.HTTPSDELT,
+      path: process.env.HTTPS_DELETE,
       method: 'POST',
-      auth: process.env.HTTPSAUTH,
+      auth: process.env.HTTPS_AUTHENTICATION,
       agent: false,
       headers: {
         'Content-Length': Buffer.byteLength(data),

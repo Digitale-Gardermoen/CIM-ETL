@@ -60,10 +60,10 @@ const userADtrib = [
 ]
 
 const config = {
-  url: process.env.LDAPSTR,
-  baseDN: process.env.BASEDN,
-  username: process.env.LDAPUSER,
-  password: process.env.LDAPPW,
+  url: process.env.LDAP_CONNSTR,
+  baseDN: process.env.LDAP_BASEDN,
+  username: process.env.LDAP_USERNAME,
+  password: process.env.LDAP_PASSWORD,
   attributes: {
     user: userADtrib
   }
@@ -71,7 +71,7 @@ const config = {
 
 let qryOpts = {
   filter: 'objectClass=user',
-  baseDN: process.env.OPTSBASEDN
+  baseDN: process.env.LDAP_QUERY_OPTS_BASEDN
 };
 
 class LdapLoader {

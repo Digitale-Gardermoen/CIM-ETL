@@ -22,11 +22,11 @@ const userSchema = new Schema({
 class db {
   constructor() {
     this.conn = mongoose.connect(
-      process.env.MONGO, {
+      process.env.MONGOOSE_MONGO, {
         useNewUrlParser: true,
-        user: process.env.MUSER,
-        pass: process.env.MPW,
-        dbName: process.env.MDBNAME
+        user: process.env.MONGOOSE_USERNAME,
+        pass: process.env.MONGOOSE_PASSWORD,
+        dbName: process.env.MONGOOSE_DBNAME
       },
       function (err) {
         if (err) console.error('Failed to connect to mongo', err);    // this might be changed to do some better errorhandling later...
