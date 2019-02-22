@@ -1,6 +1,3 @@
-const Logging = require('../log/logging.js');
-const logger = new Logging();
-
 async function upsertUsers(destination, user, diff) {
   /*
     We want to check if the source user exists, or has any changes at the destination.
@@ -46,7 +43,7 @@ async function upsertUsers(destination, user, diff) {
     }
   }
   catch (error) {
-    logger.errorHandler(error);
+    console.error(error);
   }
 }
 
@@ -67,7 +64,7 @@ async function removeUsers(destination, sidArr, diff) {
     })
   }
   catch (error) {
-    logger.errorHandler(error);
+    console.error(error);
   }
 }
 
@@ -88,7 +85,7 @@ async function compare(source, destination) {
     return diff;
   }
   catch (error) {
-    logger.errorHandler(error);
+    console.error(error);
   }
 }
 
