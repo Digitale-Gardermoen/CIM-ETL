@@ -19,7 +19,7 @@ const userSchema = new Schema({
   description: String
 });
 
-class db {
+class MongoDB {
   constructor() {
     this.conn = mongoose.connect(
       process.env.MONGOOSE_MONGO, {
@@ -108,4 +108,4 @@ class db {
 
 }
 
-module.exports = db;
+module.exports = MongoDB;

@@ -1,6 +1,6 @@
 require('dotenv').config();
-const db = require('../data/mongo.js');
-const cimUsers = new db();
+const MongoDB = require('../data/mongo.js');
+const cimUsers = new MongoDB();
 
 class CimLoader {
   constructor() {}

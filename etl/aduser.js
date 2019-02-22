@@ -1,7 +1,7 @@
 require('dotenv').config();
 const ActiveDirectory = require('activedirectory2');
-const db = require('../data/mongo.js');
-const ADUsers = new db();
+const MongoDB = require('../data/mongo.js');
+const adUsers = new MongoDB();
 
 // use a dictionary to translate the received object properties into the correct property names
 const translateDict = {
@@ -80,7 +80,7 @@ class LdapLoader {
   }
 
   async importUsers() {
-    ADUsers.deleteADUsers();  // delete all AD users in the mongodb.
+    adUsers.deleteADUsers();  // delete all AD users in the mongodb.
     this.ad.findUsers(qryOpts, false, function (err, users) {
       if (err) {
         console.log('ERROR: ', err);
@@ -101,14 +101,14 @@ class LdapLoader {
 
       Promise.all(userData)             // wait for the array of user objects to be processed through the factory.
         .then(users => {
-          ADUsers.insertADUsers(users); // import all the users to the mongodb. Dont match anything, the collection should be empty.
+          adUsers.insertADUsers(users); // import all the users to the mongodb. Dont match anything, the collection should be empty.
         })
         .catch(console.log);
     });
   }
 
   async getUsers() {
-    return ADUsers.fetchADUsers();
+    return adUsers.fetchADUsers();
   }
 }
 
