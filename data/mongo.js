@@ -19,51 +19,22 @@ const userSchema = new Schema({
   description: String
 });
 
-class db {
+class MongoDB {
   constructor() {
     this.conn = mongoose.connect(
-      process.env.MONGO, {
+      process.env.MONGOOSE_MONGO, {
         useNewUrlParser: true,
-        user: process.env.MUSER,
-        pass: process.env.MPW,
-        dbName: process.env.MDBNAME
+        user: process.env.MONGOOSE_USERNAME,
+        pass: process.env.MONGOOSE_PASSWORD,
+        dbName: process.env.MONGOOSE_DBNAME
       },
       function (err) {
         if (err) console.error('Failed to connect to mongo', err);    // this might be changed to do some better errorhandling later...
       }
     );
 
-    this.User = mongoose.model('user', userSchema);
     this.CIMUser = mongoose.model('cimuser', userSchema);
     this.ADUser = mongoose.model('aduser', userSchema);
-  }
-
-  async findUser(sid) {
-    let Query = this.User.findOne({ user_import_id: sid })
-    Query.select('-_id -__v')
-    return Query.exec();   // get user by UII/SID, returns a callback function
-  }
-
-  // function to update a user, if it doesn't exist insert the user.
-  // NOTE: this updates even if the user document has that same data. this is to be changed in the ETL layer.
-  async upsertUser(SID, userObj) {
-    return this.User.updateOne(
-      { user_import_id: SID },
-      { $set: userObj },
-      { upsert: true }
-    );
-  }
-
-  // fetch all documents in the users collection, returns an array.
-  async fetchUsers() {
-    return this.User
-      .find()
-      .select('-_id -__v')
-      .exec();
-  }
-
-  async removeUser(sid) {
-    return this.User.deleteOne({ user_import_id: sid }).exec();
   }
 
   async findCIMUser(sid) {
@@ -137,4 +108,4 @@ class db {
 
 }
 
-module.exports = db;
+module.exports = MongoDB;

@@ -1,3 +1,6 @@
+const Logging = require('../log/logging.js');
+const logger = new Logging();
+
 async function upsertUsers(destination, user, diff) {
   /*
     We want to check if the source user exists, or has any changes at the destination.
@@ -5,8 +8,8 @@ async function upsertUsers(destination, user, diff) {
     If there are changed values from the source, we change the values on the properties.
     If there are properties on the destination that doesnt exist on the source, they will be deleted.
   */
-  let duser = await destination.findUser(user.user_import_id);
   try {
+    let duser = await destination.findUser(user.user_import_id);
     let action;
     if (!duser) { // check if the user doesnt exist, then add if so.
       diff.upserted.push(user.user_import_id);
@@ -42,8 +45,8 @@ async function upsertUsers(destination, user, diff) {
       return action;
     }
   }
-  catch (err) {
-    console.log(err);
+  catch (error) {
+    logger.errorHandler(error);
   }
 }
 
@@ -63,29 +66,29 @@ async function removeUsers(destination, sidArr, diff) {
       }
     })
   }
-  catch (err) {
-    console.log(err);
+  catch (error) {
+    logger.errorHandler(error);
   }
 }
 
 async function compare(source, destination) {
-  let diff = {
-    upserted: [],
-    removed: []
-  };
-  let sidArr = [];
-  let users = await source.getUsers();
   try {
+    let diff = {
+      upserted: [],
+      removed: []
+    };
+    let sidArr = [];
+    let users = await source.getUsers();
     users.forEach(async user => {
       sidArr.push(user.user_import_id);           // push the sid for use later.
-      await upsertUsers(destination, user, diff); 
+      await upsertUsers(destination, user, diff);
     });
     await removeUsers(destination, sidArr, diff)
 
     return diff;
   }
-  catch (err) {
-    console.log(err)
+  catch (error) {
+    logger.errorHandler(error);
   }
 }
 
