@@ -49,5 +49,5 @@ cron.schedule(cimschedule, async () => {
 
 process.on('SIGINT', function() {
   console.log('Got SIGINT, stopping application');
-  process.exit(err ? 1 : 0);
+  process.exit();
 });
