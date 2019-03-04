@@ -13,6 +13,11 @@ const cim = new CimApi();
 const adschedule = process.env.CRON_AD;
 const cimschedule = process.env.CRON_CIM;
 
+console.log('############### CIM-ETL START UP ###############')
+getDateString()
+.then((date) => console.log(date, ' - Ready...'))
+.catch(console.error);
+
 /*
 These cron jobs are split because the AD functions delete the ADUser collection.
 Cim runs before the Collection is populated, and thinks that all users are deleted, then it sends the delete to the CIM api.
