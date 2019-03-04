@@ -1,15 +1,17 @@
+require('dotenv').config();
 const cron = require('node-cron');
 const LdapLoader = require('../etl/aduser.js');
 const CimLoader = require('../etl/cimuser.js');
 const compare = require('../etl/collectionCompare.js');
 const CimApi = require('../client/cimapi.js');
+const getDateString = require('../client/dateString.js');
 
 const aduser = new LdapLoader();
 const cimuser = new CimLoader();
 const cim = new CimApi();
 
-const adschedule = '10,30,50 * * * *'
-const cimschedule = '0,20,40 * * * *'
+const adschedule = process.env.CRON_AD;
+const cimschedule = process.env.CRON_CIM;
 
 /*
 These cron jobs are split because the AD functions delete the ADUser collection.
@@ -20,7 +22,9 @@ Tried some await tricks here, but could figure it out.
 */
 cron.schedule(adschedule, () => {
   try {
-    console.log('AD CRON RAN');
+    getDateString()
+      .then((date) => console.log(date, ' - AD CRON RAN'))
+      .catch(console.error);
     aduser.importUsers();
   }
   catch (error) {
@@ -30,7 +34,9 @@ cron.schedule(adschedule, () => {
 
 cron.schedule(cimschedule, async () => {
   try {
-    console.log('CIM CRON RAN');
+    getDateString()
+      .then((date) => console.log(date, ' - CIM CRON RAN'))
+      .catch(console.error);
     let diff = await compare(aduser, cimuser)                 // get the diff object from the compare function.
     if (diff.upserted.length > 0) {                           // check if any users are upserted.
       console.log('upserted: ', diff.upserted);
@@ -47,7 +53,15 @@ cron.schedule(cimschedule, async () => {
   }
 });
 
-process.on('SIGINT', function() {
-  console.log('Got SIGINT, stopping application');
-  process.exit();
+process.on('SIGINT', async function () {
+  try {
+    let date = await getDateString()
+    console.log(date, ' - Got SIGINT, stopping application')
+  }
+  catch (error) {
+    console.error(error);
+  }
+  finally {
+    process.exit();
+  }
 });
