@@ -21,7 +21,6 @@ class CimApi {
 
     const req = https.request(options, res => {
       console.log('statuscode: ', res.statusCode);
-      console.log('headers: ', res.headers);
       res.setEncoding('utf8');
 
       res.on('data', chunk => {
@@ -58,7 +57,6 @@ class CimApi {
 
     const req = https.request(options, res => {
       console.log('statuscode: ', res.statusCode);
-      console.log('headers: ', res.headers);
       res.setEncoding('utf8');
 
       res.on('data', chunk => {
