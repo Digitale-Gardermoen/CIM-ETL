@@ -15,8 +15,8 @@ const cimschedule = process.env.CRON_CIM;
 
 console.log('############### CIM-ETL START UP ###############')
 getDateString()
-.then((date) => console.log(date, ' - Ready...'))
-.catch(console.error);
+  .then((date) => console.log(date, ' - Ready...'))
+  .catch(console.error);
 
 /*
 These cron jobs are split because the AD functions delete the ADUser collection.
@@ -26,15 +26,10 @@ We dont want that.
 Tried some await tricks here, but could figure it out.
 */
 cron.schedule(adschedule, () => {
-  try {
-    getDateString()
-      .then((date) => console.log(date, ' - AD CRON RAN'))
-      .catch(console.error);
-    aduser.importUsers();
-  }
-  catch (error) {
-    console.error(error)
-  }
+  getDateString()
+    .then((date) => console.log(date, ' - AD CRON RAN'))
+    .catch(console.error);
+  aduser.importUsers();
 });
 
 cron.schedule(cimschedule, async () => {
