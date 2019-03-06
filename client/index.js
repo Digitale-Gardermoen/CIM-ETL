@@ -13,6 +13,11 @@ const cim = new CimApi();
 const adschedule = process.env.CRON_AD;
 const cimschedule = process.env.CRON_CIM;
 
+console.log('############### CIM-ETL START UP ###############')
+getDateString()
+  .then((date) => console.log(date, '- Ready...'))
+  .catch(console.error);
+
 /*
 These cron jobs are split because the AD functions delete the ADUser collection.
 Cim runs before the Collection is populated, and thinks that all users are deleted, then it sends the delete to the CIM api.
@@ -21,21 +26,16 @@ We dont want that.
 Tried some await tricks here, but could figure it out.
 */
 cron.schedule(adschedule, () => {
-  try {
-    getDateString()
-      .then((date) => console.log(date, ' - AD CRON RAN'))
-      .catch(console.error);
-    aduser.importUsers();
-  }
-  catch (error) {
-    console.error(error)
-  }
+  getDateString()
+    .then((date) => console.log(date, '- AD CRON RAN'))
+    .catch(console.error);
+  aduser.importUsers();
 });
 
 cron.schedule(cimschedule, async () => {
   try {
     getDateString()
-      .then((date) => console.log(date, ' - CIM CRON RAN'))
+      .then((date) => console.log(date, '- CIM CRON RAN'))
       .catch(console.error);
     let diff = await compare(aduser, cimuser)                 // get the diff object from the compare function.
     if (diff.upserted.length > 0) {                           // check if any users are upserted.
@@ -56,7 +56,7 @@ cron.schedule(cimschedule, async () => {
 process.on('SIGINT', async function () {
   try {
     let date = await getDateString()
-    console.log(date, ' - Got SIGINT, stopping application')
+    console.log(date, '- Got SIGINT, stopping application')
   }
   catch (error) {
     console.error(error);
