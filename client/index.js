@@ -3,10 +3,12 @@ const LdapLoader = require('../etl/aduser.js');
 const CimLoader = require('../etl/cimuser.js');
 const compare = require('../etl/collectionCompare.js');
 const CimApi = require('../client/cimapi.js');
+const MSsql = require('./data/mssql.js');
 
 const aduser = new LdapLoader();
 const cimuser = new CimLoader();
 const cim = new CimApi();
+const sql = new MSsql();
 
 const adschedule = '10,30,50 * * * *'
 const cimschedule = '0,20,40 * * * *'
