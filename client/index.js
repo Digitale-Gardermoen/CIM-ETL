@@ -15,9 +15,7 @@ const cimschedule = process.env.CRON_CIM;
 const maxRemovedUsers = process.env.MAXREMOVEDUSERS;
 
 console.log('############### CIM-ETL START UP ###############')
-getDateString()
-  .then((date) => console.log(date, '- Ready...'))
-  .catch(console.error);
+console.log(getDateString(), '- Ready...');
 
 /*
 These cron jobs are split because the AD functions delete the ADUser collection.
@@ -27,17 +25,13 @@ We dont want that.
 Tried some await tricks here, but could figure it out.
 */
 cron.schedule(adschedule, () => {
-  getDateString()
-    .then((date) => console.log(date, '- AD CRON RAN'))
-    .catch(console.error);
+  console.log(getDateString(), '- AD CRON RAN');
   aduser.importUsers();
 });
 
 cron.schedule(cimschedule, async () => {
   try {
-    getDateString()
-      .then((date) => console.log(date, '- CIM CRON RAN'))
-      .catch(console.error);
+    console.log(getDateString(), '- CIM CRON RAN');
     let diff = await compare(aduser, cimuser)                 // get the diff object from the compare function.
     if (diff.upserted.length > 0) {                           // check if any users are upserted.
       console.log('upserted: ', diff.upserted);
@@ -47,6 +41,7 @@ cron.schedule(cimschedule, async () => {
     if (diff.removed.length > 0) {
       console.log('removed: ', diff.removed);
       if (diff.removed.length > Number(maxRemovedUsers)) {
+        console.warn(getDateString(), '- Max remove user lenght received, raise the limit before deleting the users');
         return;
       }
       else {
@@ -55,17 +50,16 @@ cron.schedule(cimschedule, async () => {
     }
   }
   catch (error) {
-    console.error(error)
+    console.error(getDateString(), error)
   }
 });
 
 process.on('SIGINT', async function () {
   try {
-    let date = await getDateString()
-    console.log(date, '- Got SIGINT, stopping application')
+    console.log(getDateString(), '- Got SIGINT, stopping application');
   }
   catch (error) {
-    console.error(error);
+    console.error(getDateString(), error);
   }
   finally {
     process.exit();
