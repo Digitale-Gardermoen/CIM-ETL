@@ -12,6 +12,7 @@ const cim = new CimApi();
 
 const adschedule = process.env.CRON_AD;
 const cimschedule = process.env.CRON_CIM;
+const maxRemovedUsers = process.env.MAXREMOVEDUSERS;
 
 console.log('############### CIM-ETL START UP ###############')
 getDateString()
@@ -45,7 +46,12 @@ cron.schedule(cimschedule, async () => {
     }
     if (diff.removed.length > 0) {
       console.log('removed: ', diff.removed);
-      await cim.delete(JSON.stringify(diff.removed));
+      if (diff.removed.length > Number(maxRemovedUsers)) {
+        return;
+      }
+      else {
+        await cim.delete(JSON.stringify(diff.removed));
+      }
     }
   }
   catch (error) {
