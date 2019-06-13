@@ -1,3 +1,4 @@
+require('dotenv').config();
 const sql = require('mssql');
 
 const config = {
@@ -9,8 +10,16 @@ const config = {
 }
 
 class MssqlDB {
-  constructor() {
-    this.pool = sql.connect(config);
+  async connect() {
+    this.pool = await sql.connect(config);
+  }
+
+  async getUsers() {
+    return this.pool.request().query('select * from dbo.ILM_view');
+  }
+
+  disconnect() {
+    this.pool.close();
   }
 
 }
