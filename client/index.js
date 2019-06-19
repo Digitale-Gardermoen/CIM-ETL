@@ -22,7 +22,7 @@ These cron jobs are split because the AD functions delete the ADUser collection.
 Cim runs before the Collection is populated, and thinks that all users are deleted, then it sends the delete to the CIM api.
 We dont want that.
 
-Tried some await tricks here, but could figure it out.
+Tried some await tricks here, but couldnt figure it out.
 */
 cron.schedule(adschedule, () => {
   console.log(getDateString(), '- AD CRON RAN');
