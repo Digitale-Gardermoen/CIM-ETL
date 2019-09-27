@@ -80,7 +80,6 @@ class LdapLoader {
   }
 
   async importUsers() {
-    adUsers.deleteADUsers();  // delete all AD users in the mongodb.
     this.ad.findUsers(qryOpts, false, function (err, users) {
       if (err) {
         console.log('ERROR: ', err);
@@ -99,6 +98,7 @@ class LdapLoader {
         userData.push(aduserFactory(user, translateDict));  // translate the data from AD, this way we can match property names when importing.
       });
 
+      adUsers.deleteADUsers();  // delete all AD users in the mongodb.
       Promise.all(userData)             // wait for the array of user objects to be processed through the factory.
         .then(users => {
           adUsers.insertADUsers(users); // import all the users to the mongodb. Dont match anything, the collection should be empty.
