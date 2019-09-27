@@ -14,7 +14,7 @@ const adschedule = process.env.CRON_AD;
 const cimschedule = process.env.CRON_CIM;
 const maxRemovedUsers = process.env.MAXREMOVEDUSERS;
 
-console.log('############### CIM-ETL START UP ###############')
+console.log('############### CIM-ETL START UP ###############');
 console.log(getDateString(), '- Ready...');
 
 /*
