@@ -61,7 +61,7 @@ async function removeUsers(destination, sidArr, diff) {
         diff.removed.push(user.user_import_id);
         await destination.removeUser(user.user_import_id);
       }
-    })
+    });
   }
   catch (error) {
     console.error(error);
