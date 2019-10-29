@@ -18,7 +18,7 @@
   "dependencies": {
     "activedirectory2": "^1.2.7",
     "dotenv": "^6.2.0",
-    "mongoose": "^5.4.4",
+    "mongoose": "^5.7.5",
     "node-cron": "^2.0.3"
   }
 }
